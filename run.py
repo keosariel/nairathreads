@@ -12,7 +12,6 @@ from app.models import (
 )
 
 app = create_app()
-app.app_context().push()
 
 try:
     app.jinja_env.globals.update(__builtins__.__dict__) 
@@ -38,9 +37,8 @@ def make_shell_context():
         "Flag":Flag
     }
 
+'''
 if __name__ == '__main__':
     create_db()
     app.run(debug=True)
-    pass
-
-    app.run(debug=True)
+'''
