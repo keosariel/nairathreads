@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="box wide">
+    <div class="legend">
+        Change Password
+    </div>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+
+        <div class="boxline" style="max-width: 97%;">
+            {{ form.password.label }}
+            {{ form.password(size=40,autocomplete="off",autocorrect="off",spellcheck="false") }}
+            {% if form.password.errors %}
+                {% for error in [form.password.errors[0]] %}
+                    <span style="display: block;" class="fc-red">{{ error }}</span>
+                {% endfor %}
+            {% else %}
+                <br>
+            {% endif %}
+            
+            {{ form.new_password.label }}
+            {{ form.new_password(size=40,autocomplete="off") }}
+            {% if form.new_password.errors %}
+                {% for error in [form.new_password.errors[0]] %}
+                    <span style="display: block;" class="fc-red">{{ error }}</span>
+                {% endfor %}
+            {% else %}
+                <br>
+            {% endif %}
+
+            {{ form.confirm_new_password.label }}
+            {{ form.confirm_new_password(size=40,autocomplete="off") }}
+            {% if form.confirm_new_password.errors %}
+                {% for error in [form.confirm_new_password.errors[0]] %}
+                    <span style="display: block;" class="fc-red">{{ error }}</span>
+                {% endfor %}
+            {% else %}
+                <br>
+            {% endif %}
+        </div>
+        <div class="boxline">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+        
+    </form>
+</div>
+
+{% endblock %}

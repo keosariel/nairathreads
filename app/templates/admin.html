@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="box wide">
+    <div class="legend">
+        Admin Panel
+    </div>
+
+    <div class="boxline">
+        <label for="">Number of Users:</label>
+        <a href="{{ url_for('admin.users') }}">{{ len(users) }}</a>
+        <br>
+        <label for="">Number of Posts:</label>
+        <a href="#">{{ len(posts) }}</a>
+        <br>
+        <label for="">Number of Flagged Posts:</label>
+        <a href="{{ url_for('admin.flagged') }}">{{ len(flagged) }}</a>
+        <br>
+    </div>
+</div>
+
+{% endblock %}

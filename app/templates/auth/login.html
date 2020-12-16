@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="box wide">
+        <div class="legend">
+            Login
+        </div>
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.username.label }}
+                {{ form.username(size=30) }}
+                {% if form.username.errors %}
+                    {% for error in [form.username.errors[0]] %}
+                        <span style="display: block;" class="fc-red">{{ error }}</span>
+                    {% endfor %}
+                {% else %}
+                    <br>
+                {% endif %}
+                
+                {{ form.password.label }}
+                {{ form.password(size=30,autocomplete="off") }}
+                {% if form.password.errors %}
+                    {% for error in [form.password.errors[0]] %}
+                        <span style="display: block;" class="fc-red">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </p>
+            <p>
+                {{ form.submit(class="btn btn-primary") }}
+            </p>
+
+            <p>
+            Forgot your password?
+                <a href="{{ url_for('auth.reset_password_request') }}">Reset your password</a>.
+            </p>
+            <p>
+            Not a user yet?
+            <a class="fc-blue" href="{{ url_for('auth.signup') }}">Click to Register!</a>.
+            </p>
+        </form>
+    </div>
+{% endblock %}

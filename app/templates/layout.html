@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/static/n.png">
+    <link rel="stylesheet" href="{{url_for('static',filename='style.css')}}">
+    <title>{{title}} - Uniben</title>
+</head>
+<script>
+
+    function vote(elem,id)
+    {
+        if (Boolean(parseInt(id))) {
+            url = elem.getAttribute("href");
+            state = elem.getAttribute("data-state");
+            pid = document.getElementById(elem.getAttribute("data-pid"));
+            score = document.getElementById(`sc${id}`);
+            current_score = score.innerText.trim();
+            if(state == "up"){
+                pid.classList.add("upvoted");
+                elem.setAttribute("data-state","un");
+            }else{
+                pid.classList.remove("upvoted");
+                elem.setAttribute("data-state","up");
+            }
+
+            score.innerText = score.getAttribute("data-newscore");
+            score.setAttribute("data-newscore", current_score);
+
+            if (Boolean(url))
+            {
+                fetch(url, { method: "POST" }).then(function(response) {
+                    return response.json();
+                }).then(function(json) {
+                    console.log(json);
+                    if(json["error"] != ""){
+                        if(state == "up"){
+                            pid.classList.remove("upvoted");
+                            elem.setAttribute("data-state","up");
+                        }else{
+                            pid.classList.add("upvoted");
+                            elem.setAttribute("data-state","un");
+                        }
+                        score.innerText = score.getAttribute("data-newscore");
+                        score.setAttribute("data-newscore", current_score);
+                    }
+                });
+            }
+        }
+        return false;
+    }
+
+    function req(elem,id)
+    {
+        var url = elem.getAttribute("href");
+        rival = elem.getAttribute("data-rival").trim();
+        text = elem.innerText.trim();
+        elem.setAttribute("data-rival",text);
+        elem.innerText = rival;
+
+        if (Boolean(url))
+        {
+            var post = document.getElementById(`p${id}`);
+            var post_action = document.getElementById(`a${id}`);
+            var post_meta = document.getElementById(`m${id}`);
+
+            fetch(url, { method: "POST" }).then(function(response) {
+                return response.json();
+            }).then(function(json) {
+                console.log(json);
+                if (json["error"] != "") {
+                    elem.setAttribute("data-rival",rival);
+                    elem.innerText = text;
+                    alert(json["error"]);
+                } else {
+                    if (text == "hide"){
+                        post.remove();
+                        post_action.remove();
+                        post_meta.remove();
+                        fixrank();
+                    }
+                }
+            });
+        }
+
+        return false;
+    }
+
+    function submitReply(FormElement,p_id)
+    {
+        var xhr = new XMLHttpRequest();
+        xhr.onload = function(){ 
+            response = JSON.parse(xhr.responseText);
+            if (response["error"] != "") {
+                
+            } else {
+                FormElement.getElementsByTagName("textarea")[0].value=""
+                if (response["main"]){
+                    node = document.getElementById(`adc`);
+                    node.insertAdjacentHTML('afterend', response["text"]);
+                }else{
+                    node = document.getElementById(`c${p_id}`);
+                    node.insertAdjacentHTML('afterend', response["text"]);
+                }
+            } 
+        }
+        xhr.open(FormElement.method, FormElement.getAttribute("action"));
+        xhr.send(new FormData(FormElement));
+
+        return false;
+    }
+
+    function toggle(_id){ 
+        elem = document.getElementById(_id);
+        if(elem.style.display == "block" || elem.style.display == ""){
+            elem.style.display = "none";
+        }else{
+            elem.style.display = "block";
+        }
+    }
+
+    function colex(ev, elem, c_ind){
+        var comments = document.getElementsByClassName("comment");
+        var cs = 1;
+        var action = elem.getAttribute("data-action");
+        var n = elem.getAttribute("n");
+        
+        if (action == "c"){
+            var col = false;
+            for (x=0;x<comments.length;x++){
+                c = comments[x];
+                id = c.getAttribute("id");
+                ind = c.getAttribute("ind");
+                if (id == `c${n}`){
+                    col = true;
+                }
+                if (col){
+                    if (ind > c_ind){
+                        c.style.display = "none";
+                        cs += 1;
+                    }else if(id == `c${n}`){
+                        content = c.getElementsByClassName('comment_text')[0];
+                        voters = c.getElementsByClassName('voters')[0];
+                        content.style.display = "none";
+                        voters.style.display = "none";
+                    }else{
+                        break;
+                    }
+                }
+            }
+            elem.classList.add("folded");
+            elem.setAttribute("data-action","o");
+        }else{
+            var col = false;
+            for (x=0;x<comments.length;x++){
+                c = comments[x];
+                id = c.getAttribute("id");
+                ind = c.getAttribute("ind");
+                if (id == `c${n}`){
+                    col = true;
+                }
+                if (col){
+                    if (ind > c_ind){
+                        c.style.display = "block";
+                        cs += 1;
+                    }else if(id == `c${n}`){
+                        content = c.getElementsByClassName('comment_text')[0];
+                        voters = c.getElementsByClassName('voters')[0];
+                        content.style.display = "block";
+                        voters.style.display = "block";
+                    }else{
+                        break;
+                    }
+                }
+            }
+            elem.classList.remove("folded");
+            elem.setAttribute("data-action","c");
+        }
+    }
+
+    function fixrank(){
+        ranks = document.getElementsByClassName("rank");
+        for (var x=0; x<ranks.length; x++){ ranks[x].innerText = `${x+1}.`}
+    }
+    
+</script>
+
+<body>
+    <div id="wrapper">
+        <div id="header">
+            <div id="headerleft">
+                <a id="l_holder" style="background-color: transparent;" href="{{ url_for('main.home',_external=True) }}"></a>
+                <span class="headerlinks">
+                    <a href="{{ url_for('main.home',_external=True) }}" class="{{ 'cur_url' if tab == 'top' else '' }}">{{ 'Naira Threads' if tab == "top" else "Home" }}</a>
+                    <a href="{{url_for('main.new',_external=True)}}" class="{{ 'cur_url' if tab == 'new' else '' }}">Recent</a>
+                    <a href="{{url_for('main.newcomments',_external=True)}}" class="{{ 'cur_url' if tab == 'newcomments' else '' }}">Comments</a>
+                    <a href="{{ url_for('post.submit',_external=True) }}" class="{{ 'cur_url' if tab == 'submit' else '' }}">Submit</a>
+                    <a href="{{ url_for('main.search',_external=True) }}" class="{{ 'cur_url' if tab == 'search' else '' }}">Search</a>
+                </span>
+            </div>
+    
+            <div id="headerright">
+                <span class="headerlinks">
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.is_admin() %}
+                            <a href="{{url_for('admin.admin_panel')}}" class="{{ 'cur_url' if tab == 'admin' else '' }}">Admin</a>
+                        {% endif %}
+                        <a id="me" href="{{url_for('author.profile',username=current_user.username,_external=True)}}" class="{{ 'cur_url' if tab == 'profile' else '' }}">Profile</a>
+                        <a id="logout" href="{{ url_for('auth.logout',_external=True) }}">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login',_external=True) }}" class="{{ 'cur_url' if tab == 'login' else '' }}">Login</a>
+                    {% endif %}
+                </span>
+            </div>
+    
+            <div class="clear"></div>
+        </div>
+    
+        <div id="inside">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% set category, message = messages[-1] %}
+                    <table class="flash {{category}}" width="100%" cellpadding="5">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    {{message}}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                {% endif %}
+            {% endwith %}
+            {% block content %}
+
+            {% endblock %}
+
+            <div id="footer">
+                <a href="{{url_for('main.rules')}}">Guidelines</a>
+                <a href="{{url_for('main.anonymous')}}">Anonymous</a>
+                <a href="http://www.nairagazer.com" target="blank">Nairagazer</a>
+                <a href="{{url_for('main.privacy')}}">Privacy</a>
+                <a href="{{url_for('main.about')}}">About</a>
+    
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="box">
+    <div class="legend">
+        Search
+    </div>
+    
+    <form action="{{url_for('main.search')}}" accept-charset="UTF-8" method="get">
+        <div class="boxline">
+            <input value="{{query}}" size="40" autofocus="autofocus" type="text" name="q" id="q">
+            <input type="submit" value="Search">
+        </div>
+    </form>
+</div>
+
+<ol class="stories list ">
+    {% set rank = start_rank_num %}
+    {% for i,post in enumerate(posts) %}
+        {{ render_template("_post.html",post=post,rank=None,search=True) | safe }}
+    {% endfor %}
+</ol>
+
+<div class="morelink">
+    {% if next_url %}
+        <a href="{{ next_url }}">More &gt;&gt;</a>
+    {% endif %} 
+</div>
+
+{% endblock %}

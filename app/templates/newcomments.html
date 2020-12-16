@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<ol class="comments comments1">
+    {% set rank = start_rank_num %}
+    {% for i,post in enumerate(posts) %}
+        {{ render_template("ind_comment.html",post=post,parent=None,ind=False,noreply=True) | safe }}
+    {% endfor %}
+</ol> 
+<div class="morelink">
+    {% if next_url %}
+        <a href="{{ next_url }}">More &gt;&gt;</a>
+    {% endif %} 
+</div>
+{% endblock %}

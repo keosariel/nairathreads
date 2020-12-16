@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<tr>
+    <td>
+        <table border="0">
+            <tbody>
+                <tr class="athing">
+                    <td valign="top" class="fw-bold">user:</td>
+                    <td>
+                        <a href="{{ url_for('author.profile',username=user.username) }}" class="nguser">{{ user.username }}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" class="fw-bold">created:</td>
+                    <td>
+                        <span>{{ get_sec_diff_str(user.timestamp) }}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" class="fw-bold">karma:</td>
+                    <td>
+                        {{ user.karma }}
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" class="fw-bold">about:</td>
+                    <td style="max-width: 400px;">
+                        {{user.bio if user.bio else 'A mystery...'}}
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><a href="{{url_for('author.submitted',id=user.username)}}"><u>submissions</u></a> &nbsp;/&nbsp;<a href="{{url_for('author.comments',id=user.username)}}"><u>comments</u></a>&nbsp;<span><i>(shared)</i></span></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <a href="{{ url_for('author.favorites',id=user.username) }}"><u>favorite submissions</u></a> 
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </td>
+</tr>
+{% endblock %}

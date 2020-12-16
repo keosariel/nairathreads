@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="box">
+    <div class="legend">
+        Edit Profile
+    </div>
+    {% if not current_user.email %}
+        <table class="flash error" width="100%" cellpadding="5">
+            <tbody>
+                <tr>
+                    <td>Please put a valid address in the email field, or we won't be able to
+                        send you a new password if you forget yours. Your email address is only
+                        visible to you and us.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+    {% endif %}
+    <form action="" method="post" novalidate>
+
+        {{ form.hidden_tag() }}
+
+        <div class="boxline">
+            {{ form.username.label }}
+            {{ form.username(size=40) }}
+            {% if form.username.errors %}
+                {% for error in [form.username.errors[0]] %}
+                    <span style="display: block;" class="fc-red">{{ error }}</span>
+                {% endfor %}
+            {% else %}
+                <br>
+            {% endif %}
+
+            {{ form.email.label }}
+            {{ form.email(size=40) }}
+            {% if form.email.errors %}
+                {% for error in [form.email.errors[0]] %}
+                    <span style="display: block;" class="fc-red">{{ error }}</span>
+                {% endfor %}
+            {% else %}
+                <br>
+            {% endif %}
+
+        </div>
+
+        <div class="boxline">
+            {{ form.bio.label(class="required") }}
+            {{ form.bio(rows="5", style="width:97%!important;max-width:90%;") }}
+            {% if form.bio.errors %}
+                {% for error in [form.bio.errors[0]] %}
+                    <span style="display: block;" class="fc-red">{{ error }}</span>
+                {% endfor %}
+            {% else %}
+                <br>
+            {% endif %}
+        </div>
+
+        <p>
+            {{ form.submit(class="btn btn-primary") }}
+        </p>
+        
+    </form>
+
+</div>
+{% endblock %}

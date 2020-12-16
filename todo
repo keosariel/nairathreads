@@ -1,0 +1,24 @@
+[x] edit profile
+[x] join and leave group
+[x] vote, fave, hide posts
+[x] reply
+[+] upload images
+[x] edit group info
+[x] add state to some fields
+[x] add dead to posts
+[x] add state to user
+[x] post from a group
+[+] add nairagazer
+[x] links tabs in a group's page
+[x] check nexts of goto
+[x] rules
+[x] markdown
+[x] delete post
+[x] add misc to all db items
+[x] text at the top of the thread
+[x] search
+[x] parse inputs username, password
+[x] dont show users post on upvoted (add a news field to vote)
+[x] flash
+[x] collect IP
+[+] remove tracking parameters

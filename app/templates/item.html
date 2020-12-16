@@ -1,0 +1,102 @@
+{% extends "layout.html" %}
+
+{% block content %}
+{% set comments,comments_len = get_comments(post) %}
+<ol class="stories">
+    {% if post.parent_id == 0 %}
+        {{ render_template("_post.html",post=post,rank=None) | safe }}
+    {% else %}
+        {{ render_template("ind_comment.html",post=post,parent=None,ind=False,noreply=False) | safe }}
+    {% endif %}
+</ol>
+
+<ol class="comments comments1 px24">
+    <li class="comments_subtree" id="adc">
+        {% if post.parent_id == 0 %}
+            <div class="comment comment_form_container" data-shortid="">
+                {% if current_user.is_authenticated %}
+                    <form id="edit_comment_" method="post" action="{{url_for('post.reply')}}" onsubmit="return submitReply(this,0);" accept-charset="UTF-8">
+                        <input type="hidden" name="parent" value="{{ post.id }}">
+                        <input type="hidden" name="goto" value="{{ url_for('post.item',id=post.id) }}">
+                        <input type="hidden" name="tok" value="{{ custom_encode(str(current_user.username)+':'+str(current_user.id)+':'+str(post.id)) }}">
+                
+                        <div style="width: 100%;">
+                            <textarea rows="5" placeholder="You can comment anonymously." name="text" id="comment"></textarea>
+                            <div class="markdown_help_toggler">
+                                <div class="box" style="max-width:97%;margin: 0px;">
+                                    <div class="markdown_help_label" onclick="toggle('markdown_help')">
+                                        Markdown formatting available
+                                    </div>
+                                    <div style="clear: both;"></div>
+                                    <div class="markdown_help" id="markdown_help" style="padding-top: 0.5em; display: none;margin-bottom: 10px;">
+                                        <table>
+                                            <tbody>
+                                                <tr>
+                                                    <td width="125"><em>emphasized text</em></td>
+                                                    <td>surround text with <tt>*asterisks*</tt></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>strong text</strong></td>
+                                                    <td>surround text with <tt>**two asterisks**</tt></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strike>struck-through</strike></td>
+                                                    <td>surround text with <tt>~~two tilde characters~~</tt></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><tt>fixed width</tt></td>
+                                                    <td>surround text with <tt>`backticks`</tt></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><a href="http://example.com/" style="color: inherit; --darkreader-inline-color: inherit;"
+                                                            data-darkreader-inline-color="">linked text</a></td>
+                                                    <td><tt>[linked text](http://example.com/)</tt> or just a bare URL
+                                                        to create without a title</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <blockquote> quoted text</blockquote>
+                                                    </td>
+                                                    <td>prefix text with <tt>&gt;</tt></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <pre style="margin: 0px;">pre text</pre>
+                                                    </td>
+                                                    <td>prefix text with at least<tt>&nbsp;&nbsp;&nbsp;&nbsp;4 spaces</tt></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <input type="submit" name="commit" value="add comment" class="comment-post">
+                                <div style="clear: both;"></div>
+                            </div>
+                        </div>
+                        <p></p>
+                    </form>
+                {% else %}
+                    <form id="edit_comment_" method="post" action="{{url_for('post.reply')}}" onsubmit="return submitReply(this,0);" accept-charset="UTF-8">
+                        <input type="hidden" name="parent" value="{{ post.id }}">
+                        <input type="hidden" name="goto" value="{{ url_for('post.item',id=post.id) }}">
+                        <input type="hidden" name="tok" value="{{ custom_encode(str('anonymous')+':'+str(1)+':'+str(post.id)) }}">
+                        <div style="width: 100%;">
+                            <textarea rows="5" placeholder="You can comment anonymously." name="text" id="comment"></textarea>
+                            <p></p>
+                            <div class="markdown_help_toggler">
+                                <input type="submit" name="commit" value="add comment" class="comment-post">
+                                <div style="clear: both;"></div>
+                            </div>
+                        </div>
+                        <p></p>
+                    </form>
+                {% endif %}
+            </div>
+        {% endif %}
+    </li>
+
+    {%for comment in comments%}
+        {{ render_template("ind_comment.html",post=comment,parent=post,ind=True,noreply=False) | safe }}
+    {% endfor %}
+</ol>
+{% endblock %}

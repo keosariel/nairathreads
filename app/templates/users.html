@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="box wide">
+    <div class="legend">
+        Users
+    </div>
+
+    <div class="boxline">
+        {% for i,user in enumerate(users) %}
+            <div style="border-bottom: 1px dotted {{ '#222' if i+1 < len(users) else '#fff' }};">
+                <label for="">Username:</label>
+                <a href="{{ url_for('author.profile',username=user.username) }}">{{ user.username }}</a>
+                <br>
+                <label for="">Karma:</label>
+                <a href="{{ url_for('author.profile',username=user.username) }}">{{ user.karma }}</a>
+                <br>
+                <label for="">Number of Submittions:</label>
+                <a href="{{url_for('author.submitted',id=user.username)}}">{{ len(user.posts) }}</a>
+                <br>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="morelink">
+        {% if next_url %}
+            <a href="{{ next_url }}">More &gt;&gt;</a>
+        {% endif %} 
+    </div>
+</div>
+
+{% endblock %}

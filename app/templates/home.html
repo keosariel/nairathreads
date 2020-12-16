@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<ol class="stories list ">
+    {% set rank = start_rank_num %}
+    {% for i,post in enumerate(posts) %}
+        {{ render_template("_post.html",post=post,rank=rank+i) | safe }}
+    {% endfor %}
+</ol>
+<div class="morelink">
+    {% if next_url %}
+        <a href="{{ next_url }}">More &gt;&gt;</a>
+    {% endif %} 
+</div>
+{% endblock %}

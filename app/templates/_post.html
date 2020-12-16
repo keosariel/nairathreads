@@ -1,0 +1,79 @@
+{% set vote,hide,fave = (None,None,None) %}
+{% set comments,comments_len = get_comments(post) %}
+{% if current_user.is_authenticated %}
+    {% set vote,hide,fave,flag = ghv(post.id,current_user.id,f=True) %}
+{% endif %}
+
+
+{% set votes_len = len(post.votes) %}
+{% set vote_state = 'un' if vote else 'up' %}
+
+<li class="story {{ 'upvoted' if vote else '' }}" id="p{{ post.id }}">
+    <div class="story_liner h-entry">
+        <div class="voters">
+            {% if current_user.is_authenticated %}
+                <a class="upvoter" data-pid="p{{ post.id }}" data-state="{{ vote_state }}" onclick="return vote(this, {{ post.id }})" href="{{url_for('post.vote',id=post.id,state=vote_state,goto=url_for('post.item',id=post.id))}}"></a>
+            {% else %}
+                <a class="upvoter" href="{{ url_for('auth.login', goto=url_for('post.item',id=post.id)) }}"></a>
+            {% endif %}
+            <div id="sc{{post.id}}" data-newscore="{{ votes_len-1 if vote else votes_len+1 }}" class="score">{{ votes_len }}</div>
+        </div>
+        <div class="details">
+            {% if not post.is_deleted() %}
+                <span class="link h-cite u-repost-of">
+                    <a class="u-url" href="{{ post.url if post.url else ''+str(url_for('post.item',id=post.id,_external=True)) }}" rel="ugc noreferrer">{{post.title}}</a>
+                </span>
+                {% if post.url_base %}
+                    <a class="domain" href="{{ url_for('main.site', site=post.url_base) }}">({{ post.url_base }})</a>
+                {% endif %}
+            {% elif post.is_flagged() %}
+                <span class="na">
+                    [Post was flagged to death]
+                </span>
+            {% else %}
+                <span class="na">
+                    [Post removed by author]
+                </span>
+            {% endif %}
+            <div class="byline">
+                submitted by
+                <a href="{{ url_for('author.profile',username=post.author.username,_external=True) }}" class="u-author h-card user_is_author">{{ post.author.username }}</a>
+
+                <span title="{{ post.date.strftime('%Y-%m-%d %H:%M:%S') }}">{{ get_sec_diff_str(post.date) }}</span>
+                {% if post.author != current_user %}
+                    | <a onclick="return req(this, {{ post.id }})" href="{{url_for('post.flag',id=post.id,goto=url_for('post.item',id=post.id))}}" data-rival="{% if flag %}flag{%else%}unflag{% endif %}">
+                        {% if flag %}unflag{%else%}flag{% endif %}
+                    </a>
+                {% endif %}
+                |
+                <a onclick="return req(this, {{ post.id }})" href="{{url_for('post.fave',id=post.id,goto=url_for('post.item',id=post.id))}}"  data-rival="{% if fave %}favourite{%else%}unfavourite{% endif %}" rel="ugc" target="_blank">
+                    {% if fave %}unfavourite{%else%}favourite{% endif %}
+                </a>
+                {% if current_user.is_authenticated %}
+                    {% if (post.author == current_user and post.can_delete()) or current_user.is_admin() %}
+                        | <a onclick="return req(this, {{ post.id }})"  href="{{url_for('post.delete',id=post.id,goto=url_for('post.item',id=post.id))}}" data-rival="{% if post.is_deleted() %}delete{%else%}undelete{% endif %}">
+                            {% if post.is_deleted() %} 
+                                undelete
+                            {% else %}
+                                delete
+                            {% endif %}
+                        </a> 
+                    {% endif %}
+                {% endif %}
+                <span class="comments_label">
+                    |
+                    <a href="{{url_for('post.item',id=post.id,_external=True)}}">
+                        {% if comments_len > 0 %} 
+                            {{ comments_len }} comments
+                        {% else %}
+                            discuss
+                        {% endif %}
+                    </a>
+                </span>
+            </div>
+        </div>
+    </div>
+    <a href="{{url_for('post.item',id=post.id,_external=True)}}" class="mobile_comments " style="display: none;">
+        <span>{{ comments_len }}</span>
+    </a>
+</li>
