@@ -17,13 +17,9 @@ from datetime import datetime, timedelta
 from requests import post
 import os
 from app.custom_encrypt import *
-# import nltk
-from nltk.corpus import stopwords
 from string import punctuation
 import json
 from collections import Counter
-
-# nltk.download('stopwords')
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
